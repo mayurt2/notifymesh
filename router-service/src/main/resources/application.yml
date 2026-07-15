@@ -26,10 +26,8 @@ notifymesh:
       notification-failed: notification.failed
   vendors:
     sms:
-      - name: mock-sms-vendor-a
-        failure-rate: 0.15
-      - name: mock-sms-vendor-b
-        failure-rate: 0.03
+      primary-failure-rate: 0.15
+      fallback-failure-rate: 0.03
     email:
       failure-rate: 0.05
     whatsapp:

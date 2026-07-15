@@ -9,6 +9,10 @@ public class MockEmailVendor extends AbstractMockVendor {
         super(vendorName, NotificationChannel.EMAIL, failureRate, 50, 200);
     }
 
+    public MockEmailVendor(double failureRate) {
+        this("mock-email-vendor", failureRate);
+    }
+
     public MockEmailVendor() {
         this("mock-email-vendor", 0.05);
     }

@@ -16,7 +16,10 @@ event pipeline, and an Elasticsearch-backed delivery audit trail.
       validates the request, publishes a `notification.requested` event keyed by requestId,
       and dedupes retries via a Redis `SETNX` claim (TTL-bound) so a repeated requestId
       returns `DUPLICATE` without re-publishing.
-- [ ] Milestone 3 — Router + vendor adapters
+- [x] Milestone 3 — Router + vendor adapters: `router-service` consumes `notification.requested`,
+      picks the top-priority vendor for the channel from a `VendorRegistry` (SMS: primary →
+      fallback, Email/WhatsApp: single vendor), and attempts delivery through the mock
+      adapters. No failover across vendors yet — that's Milestone 4.
 - [ ] Milestone 4 — Failover logic (Resilience4j)
 - [ ] Milestone 5 — Audit pipeline to Elasticsearch
 - [ ] Milestone 6 — Query API
