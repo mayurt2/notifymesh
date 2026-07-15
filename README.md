@@ -32,7 +32,11 @@ event pipeline, and an Elasticsearch-backed delivery audit trail.
       (dynamic Criteria query, paginated) and `GET /api/v1/deliveries/stats/vendor-success-rate`
       (a real Elasticsearch terms aggregation with a status sub-aggregation, not an in-app
       groupBy). `from`/`to` take ISO-8601 instants (e.g. `2026-07-15T10:00:00Z`).
-- [ ] Milestone 7 — Testcontainers integration tests
+- [x] Milestone 7 — Testcontainers integration tests: `RouterFailoverIntegrationTest` runs the
+      real router-service Spring context against a real Testcontainers Kafka broker and asserts
+      an actual cross-vendor failover; `DeliveryQueryFilterIntegrationTest` seeds real
+      Elasticsearch data and exercises every `/deliveries` filter plus the vendor-success-rate
+      aggregation. 28 tests pass across all five modules.
 - [ ] Milestone 8 — Observability (Kibana, Micrometer)
 - [ ] Milestone 9 — CI (GitHub Actions)
 - [ ] Milestone 10 — Docs + polish
