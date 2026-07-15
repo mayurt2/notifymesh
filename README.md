@@ -28,7 +28,10 @@ event pipeline, and an Elasticsearch-backed delivery audit trail.
       `notification.delivered`/`notification.failed` and indexes each into the
       `notifymesh-deliveries` index, keyed by `requestId` (so redelivery overwrites rather than
       duplicates), with `channel`/`status`/`vendor` mapped as `keyword` and `timestamp` as `date`.
-- [ ] Milestone 6 — Query API
+- [x] Milestone 6 — Query API: `GET /api/v1/deliveries?channel=&status=&vendor=&from=&to=`
+      (dynamic Criteria query, paginated) and `GET /api/v1/deliveries/stats/vendor-success-rate`
+      (a real Elasticsearch terms aggregation with a status sub-aggregation, not an in-app
+      groupBy). `from`/`to` take ISO-8601 instants (e.g. `2026-07-15T10:00:00Z`).
 - [ ] Milestone 7 — Testcontainers integration tests
 - [ ] Milestone 8 — Observability (Kibana, Micrometer)
 - [ ] Milestone 9 — CI (GitHub Actions)
