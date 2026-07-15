@@ -20,7 +20,10 @@ event pipeline, and an Elasticsearch-backed delivery audit trail.
       picks the top-priority vendor for the channel from a `VendorRegistry` (SMS: primary →
       fallback, Email/WhatsApp: single vendor), and attempts delivery through the mock
       adapters. No failover across vendors yet — that's Milestone 4.
-- [ ] Milestone 4 — Failover logic (Resilience4j)
+- [x] Milestone 4 — Failover logic: each vendor call is wrapped in a per-vendor Resilience4j
+      circuit breaker + retry; when a vendor's breaker trips, the router re-routes to the next
+      vendor in the failover chain instead of failing the request, and publishes
+      `notification.delivered` / `notification.failed` with a `failoverOccurred` flag.
 - [ ] Milestone 5 — Audit pipeline to Elasticsearch
 - [ ] Milestone 6 — Query API
 - [ ] Milestone 7 — Testcontainers integration tests

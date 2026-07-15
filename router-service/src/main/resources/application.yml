@@ -35,23 +35,28 @@ notifymesh:
 
 resilience4j:
   circuitbreaker:
-    instances:
-      vendor-call:
+    configs:
+      default:
+        sliding-window-type: COUNT_BASED
         sliding-window-size: 10
+        minimum-number-of-calls: 5
         failure-rate-threshold: 50
         wait-duration-in-open-state: 5s
         permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
   retry:
-    instances:
-      vendor-call:
+    configs:
+      default:
         max-attempts: 2
         wait-duration: 200ms
+        ignore-exceptions:
+          - io.github.resilience4j.circuitbreaker.CallNotPermittedException
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus,circuitbreakers
+        include: health,info,prometheus,circuitbreakers,retries
   endpoint:
     health:
       show-details: when-authorized
