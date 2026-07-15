@@ -24,7 +24,10 @@ event pipeline, and an Elasticsearch-backed delivery audit trail.
       circuit breaker + retry; when a vendor's breaker trips, the router re-routes to the next
       vendor in the failover chain instead of failing the request, and publishes
       `notification.delivered` / `notification.failed` with a `failoverOccurred` flag.
-- [ ] Milestone 5 — Audit pipeline to Elasticsearch
+- [x] Milestone 5 — Audit pipeline to Elasticsearch: `audit-service` consumes
+      `notification.delivered`/`notification.failed` and indexes each into the
+      `notifymesh-deliveries` index, keyed by `requestId` (so redelivery overwrites rather than
+      duplicates), with `channel`/`status`/`vendor` mapped as `keyword` and `timestamp` as `date`.
 - [ ] Milestone 6 — Query API
 - [ ] Milestone 7 — Testcontainers integration tests
 - [ ] Milestone 8 — Observability (Kibana, Micrometer)
