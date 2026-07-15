@@ -11,6 +11,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryRegistry;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,15 +35,18 @@ public class DeliveryService {
     private final CircuitBreakerRegistry circuitBreakerRegistry;
     private final RetryRegistry retryRegistry;
     private final DeliveryEventPublisher eventPublisher;
+    private final MeterRegistry meterRegistry;
 
     public DeliveryService(VendorRegistry vendorRegistry,
                             CircuitBreakerRegistry circuitBreakerRegistry,
                             RetryRegistry retryRegistry,
-                            DeliveryEventPublisher eventPublisher) {
+                            DeliveryEventPublisher eventPublisher,
+                            MeterRegistry meterRegistry) {
         this.vendorRegistry = vendorRegistry;
         this.circuitBreakerRegistry = circuitBreakerRegistry;
         this.retryRegistry = retryRegistry;
         this.eventPublisher = eventPublisher;
+        this.meterRegistry = meterRegistry;
     }
 
     public void deliver(NotificationRequest request) {
@@ -61,6 +65,10 @@ public class DeliveryService {
                 log.info("delivered requestId={} channel={} vendor={} attempt={} failoverOccurred={} latencyMs={}",
                         request.requestId(), request.channel(), result.vendorName(), attemptIndex + 1,
                         failoverOccurred, elapsed);
+                countAttempt(result.vendorName(), request.channel().name(), "success");
+                if (failoverOccurred) {
+                    meterRegistry.counter("notifymesh.delivery.failover", "channel", request.channel().name()).increment();
+                }
                 eventPublisher.publish(DeliveryEvent.delivered(
                         request.requestId(), request.channel(), result.vendorName(), elapsed, failoverOccurred));
                 return;
@@ -68,6 +76,7 @@ public class DeliveryService {
                 lastError = e.getMessage();
                 log.warn("vendor attempt failed requestId={} channel={} vendor={} attempt={} reason={}",
                         request.requestId(), request.channel(), vendor.getVendorName(), attemptIndex + 1, lastError);
+                countAttempt(vendor.getVendorName(), request.channel().name(), "failure");
             }
         }
 
@@ -75,8 +84,16 @@ public class DeliveryService {
         String lastVendorTried = chain.get(chain.size() - 1).getVendorName();
         log.error("delivery failed after exhausting failover chain requestId={} channel={} vendorsTried={} latencyMs={}",
                 request.requestId(), request.channel(), chain.size(), totalElapsed);
+        if (chain.size() > 1) {
+            meterRegistry.counter("notifymesh.delivery.failover", "channel", request.channel().name()).increment();
+        }
         eventPublisher.publish(DeliveryEvent.failed(
                 request.requestId(), request.channel(), lastVendorTried, totalElapsed, chain.size() > 1, lastError));
+    }
+
+    private void countAttempt(String vendor, String channel, String outcome) {
+        meterRegistry.counter("notifymesh.delivery.attempts", "vendor", vendor, "channel", channel, "outcome", outcome)
+                .increment();
     }
 
     private DeliveryResult callWithResilience(VendorAdapter vendor, NotificationRequest request) {

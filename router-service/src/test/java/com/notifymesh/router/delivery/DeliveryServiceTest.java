@@ -12,6 +12,7 @@ import com.notifymesh.vendor.event.DeliveryStatus;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +57,8 @@ class DeliveryServiceTest {
                 vendorRegistry,
                 CircuitBreakerRegistry.ofDefaults(),
                 RetryRegistry.of(fastRetryConfig),
-                eventPublisher);
+                eventPublisher,
+                new SimpleMeterRegistry());
 
         lenient().when(primaryVendor.getVendorName()).thenReturn("vendor-a");
         lenient().when(fallbackVendor.getVendorName()).thenReturn("vendor-b");

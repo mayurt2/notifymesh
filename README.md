@@ -37,9 +37,20 @@ event pipeline, and an Elasticsearch-backed delivery audit trail.
       an actual cross-vendor failover; `DeliveryQueryFilterIntegrationTest` seeds real
       Elasticsearch data and exercises every `/deliveries` filter plus the vendor-success-rate
       aggregation. 28 tests pass across all five modules.
-- [ ] Milestone 8 — Observability (Kibana, Micrometer)
+- [x] Milestone 8 — Observability: all four services expose `/actuator/prometheus`
+      (Micrometer + `micrometer-registry-prometheus`), plus custom business counters
+      (`notifymesh.notifications.ingested`, `notifymesh.delivery.attempts`,
+      `notifymesh.delivery.failover`) and free per-vendor circuit breaker metrics from
+      Resilience4j's Micrometer integration. Kibana dashboard (data view + 4 visualizations)
+      is defined as code in `docs/kibana-saved-objects.ndjson` — import it via:
+      `curl -X POST localhost:5601/api/saved_objects/_import -H "kbn-xsrf: true" --form file=@docs/kibana-saved-objects.ndjson`.
+      Screenshot: `docs/kibana-dashboard.png`.
 - [ ] Milestone 9 — CI (GitHub Actions)
 - [ ] Milestone 10 — Docs + polish
+
+## Screenshots
+
+![Kibana delivery audit dashboard](docs/kibana-dashboard.png)
 
 ## Quick start
 
