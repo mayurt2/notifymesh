@@ -1,0 +1,59 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: router-service
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: router-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.notifymesh.*
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+
+notifymesh:
+  kafka:
+    topic:
+      notification-requested: notification.requested
+      notification-delivered: notification.delivered
+      notification-failed: notification.failed
+  vendors:
+    sms:
+      - name: mock-sms-vendor-a
+        failure-rate: 0.15
+      - name: mock-sms-vendor-b
+        failure-rate: 0.03
+    email:
+      failure-rate: 0.05
+    whatsapp:
+      failure-rate: 0.10
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      vendor-call:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+  retry:
+    instances:
+      vendor-call:
+        max-attempts: 2
+        wait-duration: 200ms
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,circuitbreakers
+  endpoint:
+    health:
+      show-details: when-authorized
