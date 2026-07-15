@@ -10,6 +10,6 @@ RUN mvn -q -pl vendor-adapters,router-service -am package -DskipTests
 
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-COPY --from=build /build/router-service/target/router-service.jar app.jar
+COPY --from=build /build/router-service/target/router-service-exec.jar app.jar
 EXPOSE 8082
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

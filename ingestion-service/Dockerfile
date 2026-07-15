@@ -10,6 +10,6 @@ RUN mvn -q -pl vendor-adapters,ingestion-service -am package -DskipTests
 
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-COPY --from=build /build/ingestion-service/target/ingestion-service.jar app.jar
+COPY --from=build /build/ingestion-service/target/ingestion-service-exec.jar app.jar
 EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

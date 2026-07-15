@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @SpringBootTest(classes = RouterServiceApplication.class)
 @Testcontainers
-class RouterFailoverIntegrationTest {
+class RouterFailoverIT {
 
     static final KafkaContainer KAFKA = new KafkaContainer(DockerImageName.parse("apache/kafka:3.7.0"));
 

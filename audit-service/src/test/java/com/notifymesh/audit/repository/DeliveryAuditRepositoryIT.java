@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataElasticsearchTest
 @Import(ElasticsearchIndexConfig.class)
 @Testcontainers
-class DeliveryAuditRepositoryTest {
+class DeliveryAuditRepositoryIT {
 
     static final ElasticsearchContainer ELASTICSEARCH = new ElasticsearchContainer(
             DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch:8.15.0"))

@@ -1,5 +1,7 @@
 # NotifyMesh
 
+[![CI](https://github.com/mayurt2/notifymesh/actions/workflows/ci.yml/badge.svg)](https://github.com/mayurt2/notifymesh/actions/workflows/ci.yml)
+
 Multi-vendor notification delivery platform with automatic vendor failover, a Kafka-based
 event pipeline, and an Elasticsearch-backed delivery audit trail.
 
@@ -45,7 +47,11 @@ event pipeline, and an Elasticsearch-backed delivery audit trail.
       is defined as code in `docs/kibana-saved-objects.ndjson` — import it via:
       `curl -X POST localhost:5601/api/saved_objects/_import -H "kbn-xsrf: true" --form file=@docs/kibana-saved-objects.ndjson`.
       Screenshot: `docs/kibana-dashboard.png`.
-- [ ] Milestone 9 — CI (GitHub Actions)
+- [x] Milestone 9 — CI: two GitHub Actions jobs, `unit-tests` (`mvn test`, fast, no Docker) and
+      `integration-tests` (`mvn verify`, Testcontainers-backed `*IT` classes via Failsafe).
+      Unit vs integration is a real Maven lifecycle split, not just a naming convention: `*Test`
+      classes run under Surefire in the `test` phase, `*IT` classes run under Failsafe in the
+      `integration-test`/`verify` phases.
 - [ ] Milestone 10 — Docs + polish
 
 ## Screenshots

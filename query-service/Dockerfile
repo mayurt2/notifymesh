@@ -10,6 +10,6 @@ RUN mvn -q -pl vendor-adapters,query-service -am package -DskipTests
 
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-COPY --from=build /build/query-service/target/query-service.jar app.jar
+COPY --from=build /build/query-service/target/query-service-exec.jar app.jar
 EXPOSE 8084
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

@@ -73,6 +73,18 @@
                             <goals>
                                 <goal>repackage</goal>
                             </goals>
+                            <configuration>
+                                <!--
+                                    Without a classifier, repackage() overwrites the module's main
+                                    jar artifact with the executable fat jar, which breaks Failsafe's
+                                    classpath resolution in the later integration-test phase (it ends
+                                    up pointed at BOOT-INF/classes instead of a flat classpath entry,
+                                    -> NoClassDefFoundError for the module's own classes). Keeping the
+                                    plain jar as the main artifact and the executable jar as "-exec"
+                                    avoids that; Dockerfiles reference the -exec.jar explicitly.
+                                -->
+                                <classifier>exec</classifier>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
@@ -85,5 +97,25 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <!--
+                Applies to every module (inherited, not just managed): *IT classes are
+                integration tests (Testcontainers-backed) run by `mvn verify`, kept out of the
+                fast `mvn test` unit-test run that plain *Test classes go through via Surefire.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.2.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 </project>

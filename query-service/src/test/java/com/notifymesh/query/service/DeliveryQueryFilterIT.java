@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @SpringBootTest
 @Testcontainers
-class DeliveryQueryFilterIntegrationTest {
+class DeliveryQueryFilterIT {
 
     static final ElasticsearchContainer ELASTICSEARCH = new ElasticsearchContainer(
             DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch:8.15.0"))
