@@ -12,7 +12,10 @@ event pipeline, and an Elasticsearch-backed delivery audit trail.
 - [x] Milestone 1 — Skeleton: multi-module Maven project, health-check endpoints on all
       services, `docker-compose up` brings up Kafka (KRaft), Elasticsearch, Kibana, Redis,
       and all four services.
-- [ ] Milestone 2 — Ingestion → Kafka with Redis idempotency
+- [x] Milestone 2 — Ingestion → Kafka with Redis idempotency: `POST /api/v1/notifications`
+      validates the request, publishes a `notification.requested` event keyed by requestId,
+      and dedupes retries via a Redis `SETNX` claim (TTL-bound) so a repeated requestId
+      returns `DUPLICATE` without re-publishing.
 - [ ] Milestone 3 — Router + vendor adapters
 - [ ] Milestone 4 — Failover logic (Resilience4j)
 - [ ] Milestone 5 — Audit pipeline to Elasticsearch
@@ -30,6 +33,11 @@ curl http://localhost:8081/actuator/health
 curl http://localhost:8082/actuator/health
 curl http://localhost:8083/actuator/health
 curl http://localhost:8084/actuator/health
+
+# submit a notification (retry with the same requestId is a no-op — see idempotency below)
+curl -X POST http://localhost:8081/api/v1/notifications \
+  -H "Content-Type: application/json" \
+  -d '{"requestId":"demo-req-1","channel":"SMS","recipient":"+919999999999","body":"hello from notifymesh"}'
 ```
 
 ## Modules
